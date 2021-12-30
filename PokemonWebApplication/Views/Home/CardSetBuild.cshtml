@@ -1,0 +1,30 @@
+﻿@{
+    ViewData["Title"] = "PokemonSetBuildPage";
+}
+<button id="cardSet">選擇S8b</button>
+    <table id="cardStage" class="col-5" style="background-color:lightblue;height:450px">
+
+</table>
+
+
+<script>
+    $(function(){
+        $("#cardSet").click(function(){
+            $.ajax({
+                type:"Get",
+                url:"@Url.Action("GetCard","Card")",
+                success:function(data){
+                    console.log(data);
+                    data.forEach(c => {
+                        let tr = $("<tr></tr>")
+                        tr.append(`<td>${c.cardSetNum}</td>`)
+                        .append(`<td>${c.cardName}</td>`)
+                        .append(`<td>${c.cardType}</td>`)
+                        $("#cardStage").append(tr)
+                    })
+                    //$("#cardStage")
+                }
+            })
+        })
+    })
+</script>

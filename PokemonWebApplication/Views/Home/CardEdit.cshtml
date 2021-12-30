@@ -1,0 +1,213 @@
+﻿@{
+	ViewData["Title"] = "PokemonSetBuildPage";
+}
+<div class="container">
+	<div class="row">
+		<div class="col-12">
+			<select class="" id="cardSetList">
+					<option selected>系列選擇</option>
+			</select>
+			
+		</div>
+	</div>
+</div>
+<div class="container">
+	<div class="row">
+		<div class="col-7 px-0 mr-2" style="overflow-y:auto;max-height:450px;">
+			<table id="cardShowStage" class="table table-striped table-bordered table-hover" style="background-color:lightblue;">
+				<thead class="thead-dark">
+					<tr>
+						<th class="">卡片組別</th>
+						<th class="">卡片編號</th>
+						<th class="">卡片名稱</th>
+						<th class="">卡片類別</th>
+						<th class="">卡圖預覽</th>
+					</tr>
+				</thead>
+				<tbody style="">
+
+				</tbody>
+			</table>
+		</div>
+		<div id="singleCardInfo" class="col-4" style="background-color:lightgreen;height:500px">
+			@*<div class="row">
+				<button id="cardAdd" style:"margin:10px">新增卡片</button>
+				<button id="cardDelete" style:"margin:10px">刪除卡片</button>
+			</div>*@
+			<div class="row p-2 m-2" style:"">
+				<form id="CardInfoForm" enctype="multipart/form-data">
+					<div class:"form-group">
+						<input type="hidden" name="CardId" id="cardIdForAdd">
+						<label>系列選擇
+							<select class="" id="cardSetForAdd" name="CardSetNum">
+								<option selected>系列選擇</option>
+							</select>
+						</label>
+						<label>卡片類別
+							<select class="" id="cardTypeForAdd" name="CardTypeNum">
+								<option selected>卡片類別</option>
+							</select>
+						</label>
+						<label >卡片編號<input type="text" class="form-control" id="txtCardNum" name="CardNum"></label>
+						<label >卡片名稱<input type="text" class="form-control" id="txtCardName" name="CardName"/></label>
+						<div>
+							<input type="file" id="cardImgInput" name="CardImg" accept=".jpg, .jpeg, .png">
+						</div>
+						<div>
+							<input type="submit" value="新增卡片" id="formSubmitBtn"/>
+						</div>
+					</div>
+				</form>
+
+				
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<script>
+	$(function(){
+		$.ajax({
+			// 取得CardSetName
+			type:"Get",
+			url:"@Url.Action("GetCardSetName","Card")",
+			success:function(response){
+				response.forEach(x => {
+					$("#cardSetList").append(`<option class="setNumOption" value="${x.cardSetNum}">${x.cardSetName}</option>`)
+				})
+			}
+		})
+
+		$.ajax({
+			// 取得全部CardSetName
+			type:"Get",
+			url:"@Url.Action("GetCardSetNameFromEnum","Card")",
+			success:function(response){
+				response.forEach(x => {
+					$("#cardSetForAdd").append(`<option class="setNumOption" value="${x.cardSetNum}">${x.cardSetName}</option>`)
+				})
+			}
+		})
+
+		$.ajax({
+			// 取得全部CardType
+			type:"Get",
+			url:"@Url.Action("GetCardTypeNameFromEnum","Card")",
+			success:function(response){
+				response.forEach(x => {
+					$("#cardTypeForAdd").append(`<option class="setNumOption" value="${x.cardTypeNum}">${x.cardTypeName}</option>`)
+				})
+			}
+		})
+
+		$("#cardSetList").on("change",function(){
+			$("#cardShowStage tbody").html("")
+			$.ajax({
+				type:"Post",
+				url:"@Url.Action("GetCardBySet","Card")",
+				data:JSON.stringify({"SetId":this.value}),
+				dataType: "json",
+				contentType:"application/json; charset=utf-8",
+				success:function(response){
+					response.forEach(x => {
+						let tr = $(`<tr class="selectedCard" data-id="${x.cardId}" data-url="${x.cardImgSrc}"></tr>`)
+						tr.append(`<td class="cardSet" data-value="${x.cardSetNum}" align="center">${x.cardSetName}</td>`)
+						.append(`<td class="cardNum" align="center">${x.cardNum}</td>`)
+						.append(`<td class="cardName" align="center">${x.cardName}</td>`)
+						.append(`<td class="cardType" data-value="${x.cardTypeNum}" align="center">${x.cardTypeName}</td>`)
+						$("#cardShowStage").append(tr)
+					})
+				}
+			})
+		})
+
+		//點選卡片
+		$("#cardShowStage").on("click",".selectedCard",function(){
+			console.log(this)
+			$("#cardSetForAdd").val($(this).find(".cardSet").data("value"))
+			$("#cardTypeForAdd").val($(this).find(".cardType").data("value"))
+			$("#txtCardNum").val($(this).find(".cardNum").html())
+			$("#txtCardName").val($(this).find(".cardName").html())
+			$("#cardIdForAdd").val($(this).data("id"))
+		})
+
+		//修改或新增卡片
+		$("#formSubmitBtn").click(function(){
+			event.preventDefault();
+			let formdata = new FormData($("#CardInfoForm")[0]);
+			formdata.append($("#cardSetForAdd").attr("name"),$("#cardSetForAdd").val())
+			formdata.append($("#cardTypeForAdd").attr("name"),$("#cardTypeForAdd").val())
+			$.ajax({
+				type:"Patch",
+				url:"@Url.Action("UpsertCardInfo","Card")",
+				data:formdata,
+				processData : false,
+				contentType : false,
+				success:function(response){
+					console.log(response)
+				}
+			})
+		})
+	})
+
+
+
+
+	//	$("#cardGet").click(function(){
+	//		$.ajax({
+	//			type:"Get",
+	//			url:"@Url.Action("GetCard","Card")",
+	//			success:function(response){
+	//				response.forEach(c => {
+	//					let tr = $("<tr></tr>")
+	//					tr.append(`<td>${c.cardSetNum}</td>`)
+	//					.append(`<td>${c.cardNum}</td>`)
+	//					.append(`<td>${c.cardName}</td>`)
+	//					.append(`<td>${c.cardType}</td>`)
+	//					$("#cardShowStage").append(tr)
+	//				})
+	//			}
+	//		})
+	//	})
+
+	//function GetSetCardInfo(){
+	//	$.ajax({
+	//		type:"Post",
+	//		url:"@Url.Action("GetCardBySet","Card")",
+	//		data:{id:this.value},
+	//		success:function(data){
+	//			console.log(data)
+	//			data.forEach(c => {
+	//				let tr = $("<tr></tr>")
+	//				tr.append(`<td>${c.cardSetNum}</td>`)
+	//				.append(`<td>${c.cardName}</td>`)
+	//				.append(`<td>${c.cardType}</td>`)
+	//				$("#cardStage").append(tr)
+	//			})
+	//		}
+	//	})
+	//}
+
+	//$("#cardSetList").on("click",".setNumOption",function(){
+		//	$.ajax({
+		//		type:"Post",
+		//		url:"@Url.Action("GetCardBySet","Card")",
+		//		data:{id:this.value},
+		//		success:function(data){
+		//			console.log(data)
+		//			data.forEach(c => {
+		//				let tr = $("<tr></tr>")
+		//				tr.append(`<td>${c.cardSetNum}</td>`)
+		//				.append(`<td>${c.cardName}</td>`)
+		//				.append(`<td>${c.cardType}</td>`)
+		//				$("#cardStage").append(tr)
+		//			})
+		//		}
+		//	})
+		//})
+</script>
+
+
+
+
