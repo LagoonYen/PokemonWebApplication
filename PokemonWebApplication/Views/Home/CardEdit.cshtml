@@ -30,10 +30,6 @@
 			</table>
 		</div>
 		<div id="singleCardInfo" class="col-4" style="background-color:lightgreen;height:500px">
-			@*<div class="row">
-				<button id="cardAdd" style:"margin:10px">新增卡片</button>
-				<button id="cardDelete" style:"margin:10px">刪除卡片</button>
-			</div>*@
 			<div class="row p-2 m-2" style:"">
 				<form id="CardInfoForm" enctype="multipart/form-data">
 					<div class:"form-group">
@@ -52,6 +48,7 @@
 						<label >卡片名稱<input type="text" class="form-control" id="txtCardName" name="CardName"/></label>
 						<div>
 							<input type="file" id="cardImgInput" name="CardImg" accept=".jpg, .jpeg, .png">
+							<img id="previewCardImgInput" src="#" style="max-width:140px;max-height:450px"/>
 						</div>
 						<div>
 							<input type="submit" value="新增卡片" id="formSubmitBtn"/>
@@ -131,6 +128,20 @@
 			$("#txtCardName").val($(this).find(".cardName").html())
 			$("#cardIdForAdd").val($(this).data("id"))
 		})
+
+		$("#cardImgInput").change(function(){
+			readURL(this);
+		})
+
+		function readURL(input){
+			if(input.files && input.files[0]){
+				var reader = new FileReader();
+				reader.onload = function (e){
+					$("#previewCardImgInput").attr('src',e.target.result);
+				}
+				reader.readAsDataURL(input.files[0]);
+			}
+		}
 
 		//修改或新增卡片
 		$("#formSubmitBtn").click(function(){
