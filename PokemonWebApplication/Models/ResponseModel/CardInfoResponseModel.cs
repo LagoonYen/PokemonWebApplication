@@ -16,7 +16,7 @@
         public string CardSetName { get; set; }
     }
 
-    public class CardTypeInfoViewModel
+    public class CardTypeInfoViewModel  //取卡片類別名稱
     {
         public int CardTypeNum { get; set; }
         public string CardTypeName { get; set; }

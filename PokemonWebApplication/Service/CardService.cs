@@ -86,8 +86,8 @@ namespace PokemonWebApplication.Service
                 CardName = c.CardName,
                 CardTypeName = c.CardTypeNum.GetDescription(typeof(CardTypeEnum)),
                 CardImgSrc = c.CardImgSrc
-                    //CardType = ((CardTypeEnum)c.CardType).GetDescription()
-                });
+                //CardType = ((CardTypeEnum)c.CardType).GetDescription()
+            });
         }
 
         public CardInfoResponseModel GetCardById(int id)

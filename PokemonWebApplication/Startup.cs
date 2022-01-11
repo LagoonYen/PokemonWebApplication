@@ -30,6 +30,7 @@ namespace PokemonWebApplication
             services.AddScoped<ICardService, CardService>();
             services.AddScoped<ICardRepository, CardRepository>();
             services.AddScoped<IAppSetting, AppSetting>();
+            services.AddRazorPages();  //Razor 啟動時，會啟用頁面
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -54,6 +55,8 @@ namespace PokemonWebApplication
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+                endpoints.MapRazorPages();  //Razor 啟動時，會啟用頁面
             });
         }
     }

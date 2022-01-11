@@ -53,7 +53,7 @@ namespace PokemonWebApplication.Api
             return _cardService.GetCardById(id);
         }
 
-        [HttpPatch("[action]")]  //
+        [HttpPatch("[action]")]
         public int UpsertCardInfo([FromForm] UpsertCardRequestModel card)  //新增或修改卡片
         {
             

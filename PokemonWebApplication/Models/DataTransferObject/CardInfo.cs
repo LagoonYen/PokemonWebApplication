@@ -9,6 +9,4 @@
         public int CardNum { get; set; }
         public string CardImgSrc { get; set; }
     }
-
-
 }
